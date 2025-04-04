@@ -21,7 +21,7 @@ $ANT_HOME/lib must contain (see Ant-JUnit and JaCoCo installation guides):
 -->
 
 <!-- TODO: change the name to the name of the project given in the assignment (such as "count") -->
-<project name="Roaming" xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="hw10" xmlns:jacoco="antlib:org.jacoco.ant">
     <!--   Directory with source files -->
     <property name="src.dir" value="src"/>
 
@@ -51,7 +51,7 @@ $ANT_HOME/lib must contain (see Ant-JUnit and JaCoCo installation guides):
 
     <!--   Class containing the main method: define ONLY IF your project has a main -->
     <!-- TODO: if this project specifies a main class, replace "HelloWorld" with that main class (otherwise, you can ignore this) -->
-    <property name="main-class" value="MatrixDemo"/>
+    <property name="main-class" value="ReservationSystem"/>
 
     <!--   Additional jar that may be needed for properly runnign junit -->
     <path id="hamcrest.classpath">
@@ -116,10 +116,8 @@ $ANT_HOME/lib must contain (see Ant-JUnit and JaCoCo installation guides):
                 <classfiles>
                     <fileset dir="${build.dir}">
                         <exclude name="**/*Test*.class" />
-                        <exclude name="**/RoamingMap.class"/>
-                        <exclude name="**/Indexes.class"/>
-                        <exclude name="**/BuggyRoamingMap.class"/>
-                        <exclude name="**/MatrixDemo.class"/>
+                        <exclude name="**/Event.class"/>
+
                     </fileset>
                 </classfiles>
                 <sourcefiles encoding="UTF-8">

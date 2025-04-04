@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationSystem.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">hw10</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">ReservationSystem.java</span></div><h1>ReservationSystem.java</h1><pre class="source lang-java linenums">import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
+
+<span class="nc" id="L6">public class ReservationSystem {</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L9">        List&lt;Event&gt; events = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L10">        try (Scanner scanner = new Scanner(System.in)) {</span>
+            // 读取第一行，解析事件数量
+<span class="nc" id="L12">            int numEvents = InputValidator.readNumberOfEvents(scanner);</span>
+            // 逐行读取事件信息
+<span class="nc bnc" id="L14" title="All 2 branches missed.">            for (int i = 0; i &lt; numEvents; i++) {</span>
+<span class="nc" id="L15">                String line = scanner.nextLine();</span>
+                // 行号从第二行开始（第一行为事件数量）
+<span class="nc" id="L17">                Event event = InputValidator.parseEvent(line, i + 2);</span>
+<span class="nc" id="L18">                events.add(event);</span>
+            }
+<span class="nc" id="L20">        } catch (InvalidInputException e) {</span>
+<span class="nc" id="L21">            System.err.println(&quot;输入错误: &quot; + e.getMessage());</span>
+<span class="nc" id="L22">            return;</span>
+<span class="nc" id="L23">        } catch (Exception e) {</span>
+<span class="nc" id="L24">            System.err.println(&quot;发生未预料的错误: &quot; + e.getMessage());</span>
+<span class="nc" id="L25">            return;</span>
+<span class="nc" id="L26">        }</span>
+        
+        // 检测事件是否存在冲突
+<span class="nc" id="L29">        boolean conflict = checkOverlap(events);</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (conflict) {</span>
+<span class="nc" id="L31">            System.out.println(&quot;存在事件冲突。&quot;);</span>
+        } else {
+<span class="nc" id="L33">            System.out.println(&quot;无事件冲突。&quot;);</span>
+        }
+<span class="nc" id="L35">    }</span>
+
+    /**
+     * 检查事件列表中是否存在重叠冲突。
+     * 先按开始日期排序，再比较相邻事件。
+     *
+     * @param events 已验证的事件列表
+     * @return 存在重叠返回 true，否则 false
+     */
+    public static boolean checkOverlap(List&lt;Event&gt; events) {
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (events.isEmpty()) {</span>
+<span class="nc" id="L46">            return false;</span>
+        }
+<span class="fc" id="L48">        events.sort(Comparator.comparingInt(Event::getStart));</span>
+<span class="fc" id="L49">        Event previous = events.get(0);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        for (int i = 1; i &lt; events.size(); i++) {</span>
+<span class="fc" id="L51">            Event current = events.get(i);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (current.getStart() &lt;= previous.getEnd()) {</span>
+<span class="fc" id="L53">                return true;</span>
+            }
+<span class="fc" id="L55">            previous = current;</span>
+        }
+<span class="fc" id="L57">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
