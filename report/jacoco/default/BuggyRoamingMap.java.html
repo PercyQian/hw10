@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuggyRoamingMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Roaming</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">BuggyRoamingMap.java</span></div><h1>BuggyRoamingMap.java</h1><pre class="source lang-java linenums">import java.util.*;
+
+/**
+ * A special implementation that wraps RoamingMap and can be configured to exhibit buggy behavior for testing.
+ * This class helps test the error handling and warning branches in the Barricade class.
+ * @param &lt;K&gt; the type of keys
+ * @param &lt;V&gt; the type of values
+ */
+public class BuggyRoamingMap&lt;K extends Comparable&lt;K&gt;, V&gt; implements NavigableMap&lt;K, V&gt; {
+    
+<span class="fc" id="L11">    private enum BugType {</span>
+<span class="fc" id="L12">        MODIFY_STATE_ON_GET,       // modifies the state of the map when get is called</span>
+<span class="fc" id="L13">        RETURN_WRONG_VALUE_ON_GET, // returns an incorrect value when get is called</span>
+<span class="fc" id="L14">        MODIFY_STATE_ON_SIZE,      // modifies the state of the map when size is called</span>
+<span class="fc" id="L15">        RETURN_WRONG_SIZE,         // returns an incorrect size</span>
+<span class="fc" id="L16">        MODIFY_STATE_ON_TOSTRING,  // modifies the state when toString is called</span>
+<span class="fc" id="L17">        RETURN_WRONG_TOSTRING,     // returns an incorrect string representation</span>
+<span class="fc" id="L18">        FAILURE_ON_PUT             // simulates a failure during put operation</span>
+    }
+    
+    private final Set&lt;BugType&gt; enabledBugs = new HashSet&lt;&gt;();
+    private final K bugTriggerKey;      // The key that triggers the bug
+    private final V wrongValue;         // The wrong value to return for get bugs
+    private final RoamingMap&lt;K, V&gt; map; // Delegate to RoamingMap
+    
+    /**
+     * Creates a new BuggyRoamingMap with specific bugs enabled
+     * @param bugTriggerKey the key that will trigger bugs (ignored if null)
+     * @param wrongValue the incorrect value to return for get bugs
+     * @param bugs the types of bugs to enable
+     */
+    public BuggyRoamingMap(K bugTriggerKey, V wrongValue, BugType... bugs) {
+        this.map = new RoamingMap&lt;&gt;();
+        this.bugTriggerKey = bugTriggerKey;
+        this.wrongValue = wrongValue;
+        if (bugs != null) {
+            Collections.addAll(this.enabledBugs, bugs);
+        }
+    }
+    
+    @Override
+    public V get(Object key) {
+        if (bugTriggerKey != null &amp;&amp; bugTriggerKey.equals(key)) {
+            if (enabledBugs.contains(BugType.MODIFY_STATE_ON_GET)) {
+                // Modify the state by adding a random entry
+                map.put((K)(&quot;bug-&quot; + System.nanoTime()), (V)&quot;bugvalue&quot;);
+            }
+            
+            if (enabledBugs.contains(BugType.RETURN_WRONG_VALUE_ON_GET)) {
+                return wrongValue;
+            }
+        }
+        return map.get(key);
+    }
+    
+    @Override
+    public int size() {
+        if (enabledBugs.contains(BugType.MODIFY_STATE_ON_SIZE)) {
+            // Modify the state by adding a random entry
+            map.put((K)(&quot;bug-&quot; + System.nanoTime()), (V)&quot;bugvalue&quot;);
+        }
+        
+        if (enabledBugs.contains(BugType.RETURN_WRONG_SIZE)) {
+            return map.size() + 100; // Return incorrect size
+        }
+        
+        return map.size();
+    }
+    
+    @Override
+    public V put(K key, V value) {
+        if (enabledBugs.contains(BugType.FAILURE_ON_PUT)) {
+            if (bugTriggerKey != null &amp;&amp; bugTriggerKey.equals(key)) {
+                // Pretend to put but don't actually do it
+                return null;
+            }
+        }
+        return map.put(key, value);
+    }
+    
+    @Override
+    public String toString() {
+        if (enabledBugs.contains(BugType.MODIFY_STATE_ON_TOSTRING)) {
+            // Modify the state by adding a random entry
+            map.put((K)(&quot;bug-&quot; + System.nanoTime()), (V)&quot;bugvalue&quot;);
+        }
+        
+        if (enabledBugs.contains(BugType.RETURN_WRONG_TOSTRING)) {
+            return &quot;BuggyMap-&quot; + System.nanoTime();
+        }
+        
+        return map.toString();
+    }
+    
+    // Static factory methods to create maps with specific bugs
+    
+    public static &lt;K extends Comparable&lt;K&gt;, V&gt; BuggyRoamingMap&lt;K, V&gt; withStateModificationOnGet(K triggerKey) {
+        return new BuggyRoamingMap&lt;&gt;(triggerKey, null, BugType.MODIFY_STATE_ON_GET);
+    }
+    
+    public static &lt;K extends Comparable&lt;K&gt;, V&gt; BuggyRoamingMap&lt;K, V&gt; withWrongValueOnGet(K triggerKey, V wrongValue) {
+        return new BuggyRoamingMap&lt;&gt;(triggerKey, wrongValue, BugType.RETURN_WRONG_VALUE_ON_GET);
+    }
+    
+    public static &lt;K extends Comparable&lt;K&gt;, V&gt; BuggyRoamingMap&lt;K, V&gt; withStateModificationOnSize() {
+        return new BuggyRoamingMap&lt;&gt;(null, null, BugType.MODIFY_STATE_ON_SIZE);
+    }
+    
+    public static &lt;K extends Comparable&lt;K&gt;, V&gt; BuggyRoamingMap&lt;K, V&gt; withWrongSize() {
+        return new BuggyRoamingMap&lt;&gt;(null, null, BugType.RETURN_WRONG_SIZE);
+    }
+    
+    public static &lt;K extends Comparable&lt;K&gt;, V&gt; BuggyRoamingMap&lt;K, V&gt; withStateModificationOnToString() {
+        return new BuggyRoamingMap&lt;&gt;(null, null, BugType.MODIFY_STATE_ON_TOSTRING);
+    }
+    
+    public static &lt;K extends Comparable&lt;K&gt;, V&gt; BuggyRoamingMap&lt;K, V&gt; withWrongToString() {
+        return new BuggyRoamingMap&lt;&gt;(null, null, BugType.RETURN_WRONG_TOSTRING);
+    }
+    
+    public static &lt;K extends Comparable&lt;K&gt;, V&gt; BuggyRoamingMap&lt;K, V&gt; withFailureOnPut(K triggerKey) {
+        return new BuggyRoamingMap&lt;&gt;(triggerKey, null, BugType.FAILURE_ON_PUT);
+    }
+    
+    // Remaining NavigableMap interface methods - delegate to map
+    
+    @Override
+    public Entry&lt;K, V&gt; lowerEntry(K key) {
+        return map.lowerEntry(key);
+    }
+
+    @Override
+    public K lowerKey(K key) {
+        return map.lowerKey(key);
+    }
+
+    @Override
+    public Entry&lt;K, V&gt; floorEntry(K key) {
+        return map.floorEntry(key);
+    }
+
+    @Override
+    public K floorKey(K key) {
+        return map.floorKey(key);
+    }
+
+    @Override
+    public Entry&lt;K, V&gt; ceilingEntry(K key) {
+        return map.ceilingEntry(key);
+    }
+
+    @Override
+    public K ceilingKey(K key) {
+        return map.ceilingKey(key);
+    }
+
+    @Override
+    public Entry&lt;K, V&gt; higherEntry(K key) {
+        return map.higherEntry(key);
+    }
+
+    @Override
+    public K higherKey(K key) {
+        return map.higherKey(key);
+    }
+
+    @Override
+    public Entry&lt;K, V&gt; firstEntry() {
+        return map.firstEntry();
+    }
+
+    @Override
+    public Entry&lt;K, V&gt; lastEntry() {
+        return map.lastEntry();
+    }
+
+    @Override
+    public Entry&lt;K, V&gt; pollFirstEntry() {
+        return map.pollFirstEntry();
+    }
+
+    @Override
+    public Entry&lt;K, V&gt; pollLastEntry() {
+        return map.pollLastEntry();
+    }
+
+    @Override
+    public NavigableMap&lt;K, V&gt; descendingMap() {
+        return map.descendingMap();
+    }
+
+    @Override
+    public NavigableSet&lt;K&gt; navigableKeySet() {
+        return map.navigableKeySet();
+    }
+
+    @Override
+    public NavigableSet&lt;K&gt; descendingKeySet() {
+        return map.descendingKeySet();
+    }
+
+    @Override
+    public NavigableMap&lt;K, V&gt; subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+        return map.subMap(fromKey, fromInclusive, toKey, toInclusive);
+    }
+
+    @Override
+    public NavigableMap&lt;K, V&gt; headMap(K toKey, boolean inclusive) {
+        return map.headMap(toKey, inclusive);
+    }
+
+    @Override
+    public NavigableMap&lt;K, V&gt; tailMap(K fromKey, boolean inclusive) {
+        return map.tailMap(fromKey, inclusive);
+    }
+
+    @Override
+    public SortedMap&lt;K, V&gt; subMap(K fromKey, K toKey) {
+        return map.subMap(fromKey, toKey);
+    }
+
+    @Override
+    public SortedMap&lt;K, V&gt; headMap(K toKey) {
+        return map.headMap(toKey);
+    }
+
+    @Override
+    public SortedMap&lt;K, V&gt; tailMap(K fromKey) {
+        return map.tailMap(fromKey);
+    }
+
+    @Override
+    public Comparator&lt;? super K&gt; comparator() {
+        return map.comparator();
+    }
+
+    @Override
+    public K firstKey() {
+        return map.firstKey();
+    }
+
+    @Override
+    public K lastKey() {
+        return map.lastKey();
+    }
+
+    @Override
+    public Set&lt;K&gt; keySet() {
+        return map.keySet();
+    }
+
+    @Override
+    public Collection&lt;V&gt; values() {
+        return map.values();
+    }
+
+    @Override
+    public Set&lt;Entry&lt;K, V&gt;&gt; entrySet() {
+        return map.entrySet();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return map.containsKey(key);
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return map.containsValue(value);
+    }
+
+    @Override
+    public void putAll(Map&lt;? extends K, ? extends V&gt; m) {
+        map.putAll(m);
+    }
+
+    @Override
+    public V remove(Object key) {
+        return map.remove(key);
+    }
+
+    @Override
+    public void clear() {
+        map.clear();
+    }
+} 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

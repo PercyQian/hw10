@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatrixMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Roaming</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">MatrixMap.java</span></div><h1>MatrixMap.java</h1><pre class="source lang-java linenums">import java.util.*;
+import java.util.function.Function;
+
+/**
+ * The MatrixMap class represents a two-dimensional matrix with row and column indexes.
+ * It provides factory methods for creating different types of matrices and safely accessing values.
+ */
+public final class MatrixMap&lt;T&gt; {
+
+    // Internal exception class, method names conform to Java naming conventions
+    public static class InvalidLengthException extends Exception {
+<span class="fc" id="L12">        public enum Cause {</span>
+<span class="fc" id="L13">            ROW,</span>
+<span class="fc" id="L14">            COLUMN</span>
+        }
+
+        private final Cause cause;
+        private final int length;
+
+<span class="fc" id="L20">        public InvalidLengthException(Cause cause, int length) {</span>
+<span class="fc" id="L21">            this.cause = cause;</span>
+<span class="fc" id="L22">            this.length = length;</span>
+<span class="fc" id="L23">        }</span>
+
+        public Cause getCauseType() {
+<span class="fc" id="L26">            return cause;</span>
+        }
+
+        public int getLength() {
+<span class="fc" id="L30">            return length;</span>
+        }
+
+        // Method named requirePositive to better reflect its behavior (requiring positive values)
+        public static int requirePositive(Cause cause, int length) {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">            if(length &lt;= 0) {  // Changed back to &lt;= 0, zero lengths not allowed</span>
+<span class="fc" id="L36">                throw new IllegalArgumentException(new InvalidLengthException(cause, length));</span>
+            }
+<span class="fc" id="L38">            return length;</span>
+        }
+    }
+
+    private final RoamingMap&lt;Indexes, T&gt; matrix;
+
+<span class="fc" id="L44">    private MatrixMap(RoamingMap&lt;Indexes, T&gt; matrix) {</span>
+<span class="fc" id="L45">        this.matrix = matrix;</span>
+<span class="fc" id="L46">    }</span>
+
+    public static &lt;S&gt; MatrixMap&lt;S&gt; instance(int rows, int columns, Function&lt;Indexes, S&gt; valueMapper) {
+<span class="fc" id="L49">        Objects.requireNonNull(valueMapper);</span>
+<span class="fc" id="L50">        RoamingMap&lt;Indexes, S&gt; matrix = buildMatrix(rows, columns, valueMapper);</span>
+<span class="fc" id="L51">        return new MatrixMap&lt;&gt;(matrix);</span>
+    }
+
+    public static &lt;S&gt; MatrixMap&lt;S&gt; instance(Indexes size, Function&lt;Indexes, S&gt; valueMapper) {
+<span class="fc" id="L55">        Objects.requireNonNull(size);</span>
+<span class="fc" id="L56">        Objects.requireNonNull(valueMapper);</span>
+<span class="fc" id="L57">        RoamingMap&lt;Indexes, S&gt; matrix = buildMatrix(size.row(), size.column(), valueMapper);</span>
+<span class="fc" id="L58">        return new MatrixMap&lt;&gt;(matrix);</span>
+    }
+
+    public static &lt;S&gt; MatrixMap&lt;S&gt; constant(int size, S value) {
+<span class="fc" id="L62">        Objects.requireNonNull(value);</span>
+<span class="fc" id="L63">        return instance(size, size, indexes -&gt; value);</span>
+    }
+
+    public static &lt;S&gt; MatrixMap&lt;S&gt; identity(int size, S zero, S identity) {
+<span class="fc" id="L67">        Objects.requireNonNull(zero);</span>
+<span class="fc" id="L68">        Objects.requireNonNull(identity);</span>
+        // Fixed lambda expression: diagonal positions should be identity, others zero
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        return instance(size, size, indexes -&gt; (indexes.areDiagonal() ? identity : zero));</span>
+    }
+
+    public static &lt;S&gt; MatrixMap&lt;S&gt; from(S[][] matrix) {
+<span class="fc" id="L74">        Objects.requireNonNull(matrix);</span>
+<span class="fc" id="L75">        int columns = InvalidLengthException.requirePositive(InvalidLengthException.Cause.COLUMN, matrix[0].length);</span>
+<span class="fc" id="L76">        int rows = InvalidLengthException.requirePositive(InvalidLengthException.Cause.ROW, matrix.length);</span>
+<span class="fc" id="L77">        return instance(rows, columns, indexes -&gt; indexes.value(matrix));</span>
+    }
+
+    public Indexes size() {
+<span class="fc" id="L81">        int maxRow = -1;</span>
+<span class="fc" id="L82">        int maxCol = -1;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (Indexes idx : Barricade.correctKeySet(matrix)) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (idx.row() &gt; maxRow) {</span>
+<span class="fc" id="L85">                maxRow = idx.row();</span>
+            }
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if (idx.column() &gt; maxCol) {</span>
+<span class="fc" id="L88">                maxCol = idx.column();</span>
+            }
+<span class="fc" id="L90">        }</span>
+<span class="fc" id="L91">        return new Indexes(maxRow + 1, maxCol + 1);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L96">        return Barricade.correctStringRepresentation(matrix);</span>
+    }
+
+    public T value(Indexes indexes) {
+<span class="fc" id="L100">        Objects.requireNonNull(indexes);</span>
+<span class="fc" id="L101">        return Barricade.safeGet(matrix, indexes).value();</span>
+    }
+
+    public T value(int row, int column) {
+<span class="fc" id="L105">        return value(new Indexes(row, column));</span>
+    }
+
+    private static &lt;S&gt; RoamingMap&lt;Indexes, S&gt; buildMatrix(int rows, int columns, Function&lt;Indexes, S&gt; valueMapper) {
+<span class="fc" id="L109">        int rowsNumber = InvalidLengthException.requirePositive(InvalidLengthException.Cause.ROW, rows);</span>
+<span class="fc" id="L110">        int columnsNumber = InvalidLengthException.requirePositive(InvalidLengthException.Cause.COLUMN, columns);</span>
+<span class="fc" id="L111">        RoamingMap&lt;Indexes, S&gt; matrix = new RoamingMap&lt;&gt;();</span>
+        
+        // No need to special-case empty matrices since requirePositive already rejects 0 values
+        
+        // Fill the matrix normally
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; rowsNumber; i++) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            for (int j = 0; j &lt; columnsNumber; j++) {</span>
+<span class="fc" id="L118">                Indexes idx = new Indexes(i, j);</span>
+<span class="fc" id="L119">                S value = valueMapper.apply(idx);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">                if (value == null) {</span>
+<span class="fc" id="L121">                    throw new NullPointerException(&quot;Matrix cannot contain null values&quot;);</span>
+                }
+<span class="fc" id="L123">                Barricade.safePut(matrix, idx, value);</span>
+            }
+        }
+<span class="fc" id="L126">        return matrix;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

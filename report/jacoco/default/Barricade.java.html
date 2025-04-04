@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Barricade.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Roaming</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Barricade.java</span></div><h1>Barricade.java</h1><pre class="source lang-java linenums">import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * The Barricade class provides safety mechanisms for operations on NavigableMap.
+ * It ensures that operations like get, put, size, etc. behave correctly and
+ * maintain the map's state integrity.
+ */
+<span class="nc" id="L10">public class Barricade {</span>
+
+<span class="fc" id="L12">    record StateRecoveryOptional&lt;V&gt;(V value, Exception exception) {}</span>
+
+<span class="fc" id="L14">    private static final Logger logger = Logger.getLogger(Barricade.class.getName());</span>
+
+    // Renamed to safeGet to better express the intent of validating state while getting a value
+    final static &lt;K extends Comparable&lt;K&gt;, V&gt; StateRecoveryOptional&lt;V&gt; safeGet(NavigableMap&lt;K, V&gt; map, K key) {
+<span class="fc" id="L18">        Objects.requireNonNull(map);</span>
+<span class="fc" id="L19">        Objects.requireNonNull(key);</span>
+<span class="fc" id="L20">        Map&lt;K, V&gt; copy = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L21">        copy.putAll(map);</span>
+<span class="fc" id="L22">        Set&lt;Map.Entry&lt;K, V&gt;&gt; entrySetBefore = copy.entrySet();</span>
+<span class="fc" id="L23">        V prevValue = entrySetBefore.stream()</span>
+<span class="fc" id="L24">                .filter(entry -&gt; Objects.equals(entry.getKey(), key))</span>
+<span class="fc" id="L25">                .map(Map.Entry::getValue)</span>
+<span class="fc" id="L26">                .findFirst().orElse(null);</span>
+<span class="fc" id="L27">        V value = map.get(key);</span>
+<span class="fc" id="L28">        Set&lt;Map.Entry&lt;K, V&gt;&gt; entrySetAfter = correctEntrySet(map);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (!Objects.equals(entrySetBefore, entrySetAfter)) {</span>
+<span class="fc" id="L30">            throw new RuntimeException(&quot;get method of NavigableMap operated incorrectly&quot;);</span>
+        }
+        // If the returned value is inconsistent with expectation, log a warning and return the correct value
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (!Objects.equals(prevValue, value)) {</span>
+<span class="fc" id="L34">            logger.log(Level.WARNING, &quot;get method of NavigableMap returned incorrect value; correct value was used instead&quot;);</span>
+<span class="fc" id="L35">            return new StateRecoveryOptional&lt;&gt;(prevValue, null);</span>
+        }
+<span class="fc" id="L37">        return new StateRecoveryOptional&lt;&gt;(value, null);</span>
+    }
+
+    final static &lt;K extends Comparable&lt;K&gt;, V&gt; int correctSize(NavigableMap&lt;K, V&gt; map) {
+<span class="fc" id="L41">        Objects.requireNonNull(map);</span>
+<span class="fc" id="L42">        int prevSize = Collections.unmodifiableNavigableMap(map).size();</span>
+<span class="fc" id="L43">        Set&lt;Map.Entry&lt;K, V&gt;&gt; entrySetBefore = correctEntrySet(map);</span>
+<span class="fc" id="L44">        int size = map.size();</span>
+<span class="fc" id="L45">        Set&lt;Map.Entry&lt;K, V&gt;&gt; entrySetAfter = correctEntrySet(map);</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (!Objects.equals(entrySetBefore, entrySetAfter)) {</span>
+<span class="nc" id="L47">            throw new RuntimeException(&quot;size method of NavigableMap operated incorrectly&quot;);</span>
+        }
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (size != prevSize) {</span>
+<span class="fc" id="L50">            logger.log(Level.WARNING, &quot;size method of NavigableMap returned incorrect value; correct value was used instead&quot;);</span>
+<span class="fc" id="L51">            return prevSize;</span>
+        }
+<span class="fc" id="L53">        return size;</span>
+    }
+
+    // Renamed to safePut to better express the intent of validating state while putting a value
+    final static &lt;K extends Comparable&lt;K&gt;, V&gt; StateRecoveryOptional&lt;V&gt; safePut(NavigableMap&lt;K, V&gt; map, K key, V value) {
+<span class="fc" id="L58">        Objects.requireNonNull(map);</span>
+<span class="fc" id="L59">        Objects.requireNonNull(key);</span>
+<span class="fc" id="L60">        Objects.requireNonNull(value, &quot;Value cannot be null&quot;);</span>
+<span class="fc" id="L61">        Map&lt;K, V&gt; copy = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L62">        copy.putAll(map);</span>
+<span class="fc" id="L63">        copy.put(key, value);</span>
+<span class="fc" id="L64">        Set&lt;Map.Entry&lt;K, V&gt;&gt; prevRoamingSet = copy.entrySet();</span>
+<span class="fc" id="L65">        V lastValue = map.put(key, value);</span>
+<span class="fc" id="L66">        V updatedValue = safeGet(map, key).value();</span>
+<span class="fc" id="L67">        Set&lt;Map.Entry&lt;K, V&gt;&gt; newRoamingSet = correctEntrySet(map);</span>
+<span class="pc bpc" id="L68" title="1 of 4 branches missed.">        if (Objects.equals(updatedValue, value) &amp;&amp; Objects.equals(prevRoamingSet, newRoamingSet)) {</span>
+<span class="fc" id="L69">            return new StateRecoveryOptional&lt;&gt;(lastValue, null);</span>
+        } else {
+<span class="fc" id="L71">            throw new RuntimeException(&quot;put method of NavigableMap operated incorrectly&quot;);</span>
+        }
+    }
+
+    final static &lt;K extends Comparable&lt;K&gt;, V&gt; Set&lt;K&gt; correctKeySet(NavigableMap&lt;K, V&gt; map) {
+<span class="fc" id="L76">        return Collections.unmodifiableMap(Objects.requireNonNull(map)).keySet();</span>
+    }
+
+    final static &lt;K extends Comparable&lt;K&gt;, V&gt; Set&lt;Map.Entry&lt;K, V&gt;&gt; correctEntrySet(NavigableMap&lt;K, V&gt; map) {
+<span class="fc" id="L80">        return Collections.unmodifiableMap(Objects.requireNonNull(map)).entrySet();</span>
+    }
+
+    final static &lt;K extends Comparable&lt;K&gt;, V&gt; String correctStringRepresentation(NavigableMap&lt;K, V&gt; map) {
+<span class="fc" id="L84">        Objects.requireNonNull(map);</span>
+<span class="fc" id="L85">        Map&lt;K, V&gt; copy = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L86">        copy.putAll(map);</span>
+<span class="fc" id="L87">        String prevRepresentation = copy.toString();</span>
+<span class="fc" id="L88">        Set&lt;Map.Entry&lt;K, V&gt;&gt; roamingSetBefore = correctEntrySet(map);</span>
+<span class="fc" id="L89">        String representation = map.toString();</span>
+<span class="fc" id="L90">        Set&lt;Map.Entry&lt;K, V&gt;&gt; roamingSetAfter = correctEntrySet(map);</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (!Objects.equals(roamingSetBefore, roamingSetAfter)) {</span>
+<span class="nc" id="L92">            throw new RuntimeException(&quot;toString method of NavigableMap operated incorrectly&quot;);</span>
+        }
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (!Objects.equals(prevRepresentation, representation)) {</span>
+<span class="fc" id="L95">            logger.log(Level.WARNING, &quot;toString method of NavigableMap returned incorrect value; correct value was used instead&quot;);</span>
+<span class="fc" id="L96">            return prevRepresentation;</span>
+        }
+<span class="fc" id="L98">        return representation;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
