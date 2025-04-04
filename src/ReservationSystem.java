@@ -8,38 +8,38 @@ public class ReservationSystem {
     public static void main(String[] args) {
         List<Event> events = new ArrayList<>();
         try (Scanner scanner = new Scanner(System.in)) {
-            // 读取第一行，解析事件数量
+            // read the number of events
             int numEvents = InputValidator.readNumberOfEvents(scanner);
-            // 逐行读取事件信息
+            // read the events
             for (int i = 0; i < numEvents; i++) {
                 String line = scanner.nextLine();
-                // 行号从第二行开始（第一行为事件数量）
+                // the line number starts from the second line (the first line is the number of events)
                 Event event = InputValidator.parseEvent(line, i + 2);
                 events.add(event);
             }
         } catch (InvalidInputException e) {
-            System.err.println("输入错误: " + e.getMessage());
+            System.err.println("input error: " + e.getMessage());
             return;
         } catch (Exception e) {
-            System.err.println("发生未预料的错误: " + e.getMessage());
+            System.err.println("unexpected error: " + e.getMessage());
             return;
         }
         
-        // 检测事件是否存在冲突
+        // check if there is any conflict
         boolean conflict = checkOverlap(events);
         if (conflict) {
-            System.out.println("存在事件冲突。");
+            System.out.println("conflict");
         } else {
-            System.out.println("无事件冲突。");
+            System.out.println("no conflict");
         }
     }
 
     /**
-     * 检查事件列表中是否存在重叠冲突。
-     * 先按开始日期排序，再比较相邻事件。
+     * check if there is any conflict
+     * sort the events by the start date, then compare the adjacent events
      *
-     * @param events 已验证的事件列表
-     * @return 存在重叠返回 true，否则 false
+     * @param events the list of events
+     * @return true if there is any conflict, otherwise false
      */
     public static boolean checkOverlap(List<Event> events) {
         if (events.isEmpty()) {
