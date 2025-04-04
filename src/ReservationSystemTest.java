@@ -106,7 +106,7 @@ public class ReservationSystemTest {
     public void testOverlap() {
         List<Event> events = new ArrayList<>();
         events.add(new Event(1, 5));
-        events.add(new Event(4, 10)); // 与第一个事件冲突
+        events.add(new Event(4, 10)); // conflict with the first event
         events.add(new Event(11, 15));
         boolean conflict = ReservationSystem.checkOverlap(events);
         assertTrue(conflict);
@@ -114,28 +114,28 @@ public class ReservationSystemTest {
 
     @Test
     public void testMainMethodWithValidInput() {
-        // 保存原始的System.in和System.out
+        // save the original System.in and System.out
         InputStream originalIn = System.in;
         PrintStream originalOut = System.out;
         
         try {
-            // 准备测试输入
+            // prepare the test input
             String input = "3\n5 10\n15 20\n25 30\n";
             InputStream testIn = new ByteArrayInputStream(input.getBytes());
             System.setIn(testIn);
             
-            // 捕获输出
+            // capture the output
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             System.setOut(new PrintStream(outputStream));
             
-            // 运行main方法
+            // run the main method
             ReservationSystem.main(new String[]{});
             
-            // 验证输出
+            // verify the output
             String output = outputStream.toString().trim();
             assertEquals("no conflict", output);
         } finally {
-            // 恢复原始的System.in和System.out
+            // restore the original System.in and System.out
             System.setIn(originalIn);
             System.setOut(originalOut);
         }
@@ -147,7 +147,7 @@ public class ReservationSystemTest {
         PrintStream originalOut = System.out;
         
         try {
-            // 准备测试输入 - 包含重叠事件
+            // prepare the test input - contains overlapping events
             String input = "3\n5 10\n8 15\n20 25\n";
             InputStream testIn = new ByteArrayInputStream(input.getBytes());
             System.setIn(testIn);
@@ -167,28 +167,28 @@ public class ReservationSystemTest {
 
     @Test
     public void testMainMethodWithInvalidInput() {
-        // 保存原始的System.in和System.err
+        // save the original System.in and System.err
         InputStream originalIn = System.in;
         PrintStream originalErr = System.err;
         
         try {
-            // 准备无效的测试输入 (非数字的事件数量)
+            // prepare the invalid test input (non-numeric number of events)
             String input = "abc\n";
             InputStream testIn = new ByteArrayInputStream(input.getBytes());
             System.setIn(testIn);
             
-            // 捕获错误输出
+            // capture the error output
             ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
             System.setErr(new PrintStream(errorStream));
             
-            // 运行main方法
+            // run the main method
             ReservationSystem.main(new String[]{});
             
-            // 验证错误输出包含预期的消息
+            // verify the error output contains the expected message
             String errorOutput = errorStream.toString();
             assertTrue(errorOutput.contains("input error"));
         } finally {
-            // 恢复原始的System.in和System.err
+            // restore the original System.in and System.err
             System.setIn(originalIn);
             System.setErr(originalErr);
         }
@@ -196,33 +196,33 @@ public class ReservationSystemTest {
 
     @Test
     public void testMainMethodWithUnexpectedException() {
-        // 保存原始的System.in和System.err
+        // save the original System.in and System.err
         InputStream originalIn = System.in;
         PrintStream originalErr = System.err;
         PrintStream originalOut = System.out;
         
         try {
-            // 创建一个不完整的输入 (声明3个事件但只提供1个)
-            // 这会导致当Scanner尝试读取不存在的下一行时抛出NoSuchElementException
+            // create an incomplete input (declare 3 events but only provide 1)
+            // this will cause NoSuchElementException when Scanner tries to read the next line
             String input = "3\n5 10\n";
             InputStream testIn = new ByteArrayInputStream(input.getBytes());
             System.setIn(testIn);
             
-            // 捕获标准输出和错误输出
+            // capture the standard output and error output
             ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
             System.setErr(new PrintStream(errorStream));
             
-            // 禁止标准输出，使测试更清晰
+            // disable the standard output, making the test clearer
             System.setOut(new PrintStream(new ByteArrayOutputStream()));
             
-            // 运行main方法
+            // run the main method
             ReservationSystem.main(new String[]{});
             
-            // 验证错误输出包含预期的消息
+            // verify the error output contains the expected message
             String errorOutput = errorStream.toString();
             assertTrue(errorOutput.contains("unexpected error"));
         } finally {
-            // 恢复原始的System.in、System.out和System.err
+            // restore the original System.in, System.out and System.err
             System.setIn(originalIn);
             System.setOut(originalOut);
             System.setErr(originalErr);
@@ -231,21 +231,21 @@ public class ReservationSystemTest {
 
     @Test
     public void testCheckOverlapWithEmptyList() {
-        List<Event> events = new ArrayList<>(); // 创建空列表
+        List<Event> events = new ArrayList<>(); // create an empty list
         boolean conflict = ReservationSystem.checkOverlap(events);
-        assertFalse(conflict); // 验证返回false
+        assertFalse(conflict); // verify the return is false
     }
 
     @Test
     public void testReservationSystemClassCoverage() {
-        // 直接实例化类，确保类级别覆盖率
+        // directly instantiate the class, ensuring class level coverage
         ReservationSystem reservationSystem = new ReservationSystem();
         assertNotNull(reservationSystem);
     }
 
     @Test
     public void testInputValidatorClassCoverage() {
-        // 直接实例化类，确保类级别覆盖率
+        // directly instantiate the class, ensuring class level coverage
         InputValidator inputValidator = new InputValidator();
         assertNotNull(inputValidator);
     }

@@ -74,11 +74,11 @@ $ANT_HOME/lib must contain (see Ant-JUnit and JaCoCo installation guides):
         </javac>
     </target>
 
-    <!--   ant run : 从标准输入获取数据并输出到标准输出 -->
+    <!--   ant run : get data from standard input and output to standard output -->
     <target name="run" depends="build">
         <java fork="true" classname="${main-class}" classpath="${build.dir}">
             <assertions><enable/></assertions>
-            <!-- 不再指定输入输出文件，使用标准输入输出 -->
+            <!-- no need to specify input and output files, use standard input and output -->
             <arg line="${args}"/>
         </java>
     </target>
@@ -116,7 +116,7 @@ $ANT_HOME/lib must contain (see Ant-JUnit and JaCoCo installation guides):
                 <classfiles>
                     <fileset dir="${build.dir}">
                         <exclude name="**/*Test*.class" />
-                        <exclude name="**/Event.class"/>
+                        <!-- <exclude name="**/Event.class"/> -->
 
                     </fileset>
                 </classfiles>

@@ -2,3 +2,4 @@ GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_
 hw10,default,InvalidInputException,0,4,0,0,0,2,0,1,0,1
 hw10,default,InputValidator,0,115,0,20,0,26,0,14,0,4
 hw10,default,ReservationSystem,0,101,0,10,0,30,0,8,0,3
+hw10,default,Event,0,15,0,0,0,6,0,3,0,3
