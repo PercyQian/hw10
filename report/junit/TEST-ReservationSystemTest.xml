@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite errors="0" failures="0" hostname="PercydeAir-6.lan" name="ReservationSystemTest" skipped="0" tests="10" time="0.055" timestamp="2025-04-04T05:23:39">
+<testsuite errors="0" failures="0" hostname="PercydeAir-6.lan" name="ReservationSystemTest" skipped="0" tests="21" time="0.053" timestamp="2025-04-04T05:42:57">
   <properties>
     <property name="ant.library.dir" value="/opt/homebrew/Cellar/ant/1.10.15_1/libexec/lib" />
     <property name="ant.file.type" value="file" />
@@ -18,7 +18,7 @@
     <property name="user.country" value="US" />
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib" />
     <property name="output.dir" value="output" />
-    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner ReservationSystemTest skipNonTests=false filtertrace=false haltOnError=false haltOnFailure=false formatter=org.apache.tools.ant.taskdefs.optional.junit.OutErrSummaryJUnitResultFormatter showoutput=false outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/Users/percyqian/Desktop/293git/hw10/hw10/report/junit/TEST-ReservationSystemTest.xml crashfile=/Users/percyqian/Desktop/293git/hw10/hw10/junitvmwatcher12623696122643702447.properties propsfile=/Users/percyqian/Desktop/293git/hw10/hw10/junit1055200760614329599.properties" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner ReservationSystemTest skipNonTests=false filtertrace=false haltOnError=false haltOnFailure=false formatter=org.apache.tools.ant.taskdefs.optional.junit.OutErrSummaryJUnitResultFormatter showoutput=false outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/Users/percyqian/Desktop/293git/hw10/hw10/report/junit/TEST-ReservationSystemTest.xml crashfile=/Users/percyqian/Desktop/293git/hw10/hw10/junitvmwatcher9358833938694133988.properties propsfile=/Users/percyqian/Desktop/293git/hw10/hw10/junit18190866254430628618.properties" />
     <property name="http.nonProxyHosts" value="127.0.0.1|192.168.0.0/16|*.192.168.0.0/16|10.0.0.0/8|*.10.0.0.0/8|172.16.0.0/12|*.172.16.0.0/12|100.64.0.0/10|*.100.64.0.0/10|17.0.0.0/8|*.17.0.0.0/8|localhost|*.localhost|local|*.local|169.254.0.0/16|*.169.254.0.0/16|224.0.0.0/4|*.224.0.0.0/4|240.0.0.0/4|*.240.0.0.0/4" />
     <property name="jdk.debug" value="release" />
     <property name="test.dir" value="test" />
@@ -26,7 +26,7 @@
     <property name="user.home" value="/Users/percyqian" />
     <property name="user.language" value="en" />
     <property name="java.specification.vendor" value="Oracle Corporation" />
-    <property name="_jacoco.agentFile" value="/var/folders/nz/6zx7tt916fn1s3gzbmp2z3sm0000gn/T/jacocoagent13720596889757499338.jar" />
+    <property name="_jacoco.agentFile" value="/var/folders/nz/6zx7tt916fn1s3gzbmp2z3sm0000gn/T/jacocoagent18195417761547765339.jar" />
     <property name="java.version.date" value="2025-01-21" />
     <property name="java.home" value="/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home" />
     <property name="basedir" value="/Users/percyqian/Desktop/293git/hw10/hw10" />
@@ -79,16 +79,27 @@
     <property name="socksNonProxyHosts" value="127.0.0.1|192.168.0.0/16|*.192.168.0.0/16|10.0.0.0/8|*.10.0.0.0/8|172.16.0.0/12|*.172.16.0.0/12|100.64.0.0/10|*.100.64.0.0/10|17.0.0.0/8|*.17.0.0.0/8|localhost|*.localhost|local|*.local|169.254.0.0/16|*.169.254.0.0/16|224.0.0.0/4|*.224.0.0.0/4|240.0.0.0/4|*.240.0.0.0/4" />
     <property name="src.dir" value="src" />
   </properties>
-  <testcase classname="ReservationSystemTest" name="testOverlap" time="0.004" />
-  <testcase classname="ReservationSystemTest" name="testValidNumberOfEvents" time="0.001" />
-  <testcase classname="ReservationSystemTest" name="testStartAfterEnd" time="0.001" />
+  <testcase classname="ReservationSystemTest" name="testMainMethodWithValidInput" time="0.005" />
+  <testcase classname="ReservationSystemTest" name="testMainMethodWithUnexpectedException" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testOverlap" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testValidNumberOfEvents" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testCheckOverlapWithEmptyList" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testInputValidatorClassCoverage" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testStartAfterEnd" time="0.002" />
   <testcase classname="ReservationSystemTest" name="testOutOfRangeDate" time="0.0" />
-  <testcase classname="ReservationSystemTest" name="testInvalidNumberOfEvents" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testInvalidNumberOfEvents" time="0.001" />
+  <testcase classname="ReservationSystemTest" name="testNullEventLine" time="0.0" />
   <testcase classname="ReservationSystemTest" name="testNonIntegerInput" time="0.0" />
-  <testcase classname="ReservationSystemTest" name="testValidEventParsing" time="0.001" />
+  <testcase classname="ReservationSystemTest" name="testValidEventParsing" time="0.0" />
   <testcase classname="ReservationSystemTest" name="testNoOverlap" time="0.0" />
   <testcase classname="ReservationSystemTest" name="testEmptyEventLine" time="0.0" />
   <testcase classname="ReservationSystemTest" name="testNotEnoughTokens" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testNoInputOfNumberOfEvents" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testMainMethodWithInvalidInput" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testReservationSystemClassCoverage" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testNegativeInputOfNumberOfEvents" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testValidStartInvalidEndDate" time="0.0" />
+  <testcase classname="ReservationSystemTest" name="testMainMethodWithOverlap" time="0.0" />
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InputValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">hw10</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">InputValidator.java</span></div><h1>InputValidator.java</h1><pre class="source lang-java linenums">import java.util.Scanner;
 
-<span class="nc" id="L3">public class InputValidator {</span>
+<span class="fc" id="L3">public class InputValidator {</span>
 
     /**
      * read the first line of the input
@@ -10,14 +10,14 @@
      * @throws InvalidInputException when the input is empty or the format is incorrect
      */
     public static int readNumberOfEvents(Scanner scanner) throws InvalidInputException {
-<span class="pc bpc" id="L13" title="1 of 2 branches missed.">        if (!scanner.hasNextLine()) {</span>
-<span class="nc" id="L14">            throw new InvalidInputException(&quot;no input for the number of events.&quot;);</span>
+<span class="fc bfc" id="L13" title="All 2 branches covered.">        if (!scanner.hasNextLine()) {</span>
+<span class="fc" id="L14">            throw new InvalidInputException(&quot;no input for the number of events.&quot;);</span>
         }
 <span class="fc" id="L16">        String line = scanner.nextLine().trim();</span>
         try {
 <span class="fc" id="L18">            int num = Integer.parseInt(line);</span>
-<span class="pc bpc" id="L19" title="1 of 2 branches missed.">            if (num &lt; 0) {</span>
-<span class="nc" id="L20">                throw new InvalidInputException(&quot;the number of events cannot be negative.&quot;);</span>
+<span class="fc bfc" id="L19" title="All 2 branches covered.">            if (num &lt; 0) {</span>
+<span class="fc" id="L20">                throw new InvalidInputException(&quot;the number of events cannot be negative.&quot;);</span>
             }
 <span class="fc" id="L22">            return num;</span>
 <span class="fc" id="L23">        } catch (NumberFormatException e) {</span>
@@ -34,7 +34,7 @@
      * @throws InvalidInputException when the format or data is invalid
      */
     public static Event parseEvent(String line, int lineNumber) throws InvalidInputException {
-<span class="pc bpc" id="L37" title="1 of 4 branches missed.">        if (line == null || line.isEmpty()) {</span>
+<span class="fc bfc" id="L37" title="All 4 branches covered.">        if (line == null || line.isEmpty()) {</span>
 <span class="fc" id="L38">            throw new InvalidInputException(&quot;the &quot; + lineNumber + &quot; line is empty.&quot;);</span>
         }
 <span class="fc" id="L40">        String[] tokens = line.trim().split(&quot;\\s+&quot;);</span>
@@ -48,7 +48,7 @@
 <span class="fc" id="L48">        } catch (NumberFormatException e) {</span>
 <span class="fc" id="L49">            throw new InvalidInputException(&quot;the &quot; + lineNumber + &quot; line contains non-integer values.&quot;);</span>
 <span class="fc" id="L50">        }</span>
-<span class="pc bpc" id="L51" title="1 of 4 branches missed.">        if (!isValidDay(start) || !isValidDay(end)) {</span>
+<span class="fc bfc" id="L51" title="All 4 branches covered.">        if (!isValidDay(start) || !isValidDay(end)) {</span>
 <span class="fc" id="L52">            throw new InvalidInputException(&quot;the date value of the &quot; + lineNumber + &quot; line must be between 1 and 366.&quot;);</span>
         }
 <span class="fc bfc" id="L54" title="All 2 branches covered.">        if (start &gt; end) {</span>
@@ -64,7 +64,7 @@
      * @return true if the date is valid, otherwise false
      */
     private static boolean isValidDay(int day) {
-<span class="pc bpc" id="L67" title="1 of 4 branches missed.">        return day &gt;= 1 &amp;&amp; day &lt;= 366;</span>
+<span class="fc bfc" id="L67" title="All 4 branches covered.">        return day &gt;= 1 &amp;&amp; day &lt;= 366;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -3,36 +3,36 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
-<span class="nc" id="L6">public class ReservationSystem {</span>
+<span class="fc" id="L6">public class ReservationSystem {</span>
 
     public static void main(String[] args) {
-<span class="nc" id="L9">        List&lt;Event&gt; events = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L10">        try (Scanner scanner = new Scanner(System.in)) {</span>
+<span class="fc" id="L9">        List&lt;Event&gt; events = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L10">        try (Scanner scanner = new Scanner(System.in)) {</span>
             // read the number of events
-<span class="nc" id="L12">            int numEvents = InputValidator.readNumberOfEvents(scanner);</span>
+<span class="fc" id="L12">            int numEvents = InputValidator.readNumberOfEvents(scanner);</span>
             // read the events
-<span class="nc bnc" id="L14" title="All 2 branches missed.">            for (int i = 0; i &lt; numEvents; i++) {</span>
-<span class="nc" id="L15">                String line = scanner.nextLine();</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">            for (int i = 0; i &lt; numEvents; i++) {</span>
+<span class="fc" id="L15">                String line = scanner.nextLine();</span>
                 // the line number starts from the second line (the first line is the number of events)
-<span class="nc" id="L17">                Event event = InputValidator.parseEvent(line, i + 2);</span>
-<span class="nc" id="L18">                events.add(event);</span>
+<span class="fc" id="L17">                Event event = InputValidator.parseEvent(line, i + 2);</span>
+<span class="fc" id="L18">                events.add(event);</span>
             }
-<span class="nc" id="L20">        } catch (InvalidInputException e) {</span>
-<span class="nc" id="L21">            System.err.println(&quot;input error: &quot; + e.getMessage());</span>
-<span class="nc" id="L22">            return;</span>
-<span class="nc" id="L23">        } catch (Exception e) {</span>
-<span class="nc" id="L24">            System.err.println(&quot;unexpected error: &quot; + e.getMessage());</span>
-<span class="nc" id="L25">            return;</span>
-<span class="nc" id="L26">        }</span>
+<span class="fc" id="L20">        } catch (InvalidInputException e) {</span>
+<span class="fc" id="L21">            System.err.println(&quot;input error: &quot; + e.getMessage());</span>
+<span class="fc" id="L22">            return;</span>
+<span class="fc" id="L23">        } catch (Exception e) {</span>
+<span class="fc" id="L24">            System.err.println(&quot;unexpected error: &quot; + e.getMessage());</span>
+<span class="fc" id="L25">            return;</span>
+<span class="fc" id="L26">        }</span>
         
         // check if there is any conflict
-<span class="nc" id="L29">        boolean conflict = checkOverlap(events);</span>
-<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (conflict) {</span>
-<span class="nc" id="L31">            System.out.println(&quot;conflict&quot;);</span>
+<span class="fc" id="L29">        boolean conflict = checkOverlap(events);</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (conflict) {</span>
+<span class="fc" id="L31">            System.out.println(&quot;conflict&quot;);</span>
         } else {
-<span class="nc" id="L33">            System.out.println(&quot;no conflict&quot;);</span>
+<span class="fc" id="L33">            System.out.println(&quot;no conflict&quot;);</span>
         }
-<span class="nc" id="L35">    }</span>
+<span class="fc" id="L35">    }</span>
 
     /**
      * check if there is any conflict
@@ -42,8 +42,8 @@ import java.util.Scanner;
      * @return true if there is any conflict, otherwise false
      */
     public static boolean checkOverlap(List&lt;Event&gt; events) {
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (events.isEmpty()) {</span>
-<span class="nc" id="L46">            return false;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (events.isEmpty()) {</span>
+<span class="fc" id="L46">            return false;</span>
         }
 <span class="fc" id="L48">        events.sort(Comparator.comparingInt(Event::getStart));</span>
 <span class="fc" id="L49">        Event previous = events.get(0);</span>
